@@ -12,3 +12,14 @@ nltk
 spacy
 joblib==1.2.0
 seaborn
+streamlit
+streamlit-option-menu
+pandas
+numpy
+scikit-learn
+imbalanced-learn
+gensim
+nltk
+matplotlib
+seaborn
+plotly
