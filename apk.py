@@ -23,7 +23,6 @@ import seaborn as sns
 import os
 os.system('pip install nltk')
 from nltk.stem import PorterStemmer
-from keras.models import load_model
 
 
 st.set_page_config(
