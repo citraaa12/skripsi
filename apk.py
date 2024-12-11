@@ -228,15 +228,15 @@ with st.container():
         def display_test_results(file_path):
             try:
                 # Membaca data hasil testing
-                results_df = pd.read_csv(file_path)
+                df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/hasiltesting.csv")
         
                 # Tampilkan data hasil testing
                 st.subheader("Hasil Testing")
-                st.dataframe(results_df)
+                st.dataframe(df)
         
                 # Hitung metrik evaluasi
-                y_true = results_df['True Label']
-                y_pred = results_df['Predicted Label']
+                y_true = df['True Label']
+                y_pred = df['Predicted Label']
         
                 accuracy = accuracy_score(y_true, y_pred)
                 st.write(f"**Akurasi:** {accuracy:.4f}")
@@ -256,10 +256,10 @@ with st.container():
                 st.pyplot(fig)
         
             except Exception as e:
-                st.error(f"Gagal memproses file: {e}")
+                st.error(f"Gagal memproses file : {e}")
         
         # Pilih file hasil testing
-        file_path = st.text_input("Masukkan path file hasil testing (CSV):")
+        file_path = st.text_input("Masukkan path file hasil testing (CSV) :")
         if file_path:
             display_test_results(file_path)
             
