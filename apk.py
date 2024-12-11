@@ -217,88 +217,51 @@ with st.container():
         st.dataframe(df, width=600)
     
     elif selected == "Implementasi":
-        st.subheader("Implementasi Model")
+        st.subheader("Hasil Klasifikasi")
 
-        # Fungsi untuk memuat model yang telah dilatih
-        @st.cache_resource
-        def load_model():
-            # Load model terlatih
-            model_path = "best_lstm_model.h5"  # Sesuaikan dengan path model Anda
-            model = keras.models.load_model(model_path)
-            return model
-    
-        # Memuat model
-        model = load_model()
-        st.write("Model berhasil dimuat.")
-    
-        # Memasukkan komentar untuk prediksi
-        komentar_input = st.text_area("Masukkan komentar YouTube untuk diprediksi :")
-    
-        if st.button("Prediksi"):
-            if komentar_input.strip():
-                # Preprocessing komentar
-                def preprocess_text(text):
-                    text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
-                    text = text.lower()
-                    return text
-    
-                komentar_preprocessed = preprocess_text(komentar_input)
-                st.write("Komentar setelah preprocessing :", komentar_preprocessed)
-    
-                # Tokenisasi dan padding
-                tokenizer = joblib.load("tokenizer.pkl")  # Pastikan tokenizer disimpan saat melatih model
-                sequences = tokenizer.texts_to_sequences([komentar_preprocessed])
-                padded_sequences = keras.preprocessing.sequence.pad_sequences(sequences, maxlen=20)
-    
-                # Prediksi
-                prediction = model.predict(padded_sequences)
-                label_prediksi = "Positif" if prediction[0][0] > 0.5 else "Negatif"
-    
-                st.write(f"Hasil Prediksi: {label_prediksi}")
-    
-                # Menampilkan label sebenarnya jika tersedia
-                true_label = st.selectbox("Pilih label sebenarnya (opsional) :", ["", "Positif", "Negatif"])
-                if true_label:
-                    st.write(f"Label Sebenarnya: {true_label}")
-    
-            else:
-                st.warning("Harap masukkan komentar untuk diprediksi.")
-    
-        # Evaluasi Model
-        st.subheader("Evaluasi Model")
-    
-        # Memuat data uji dan hasil prediksi
-        if st.button("Tampilkan Evaluasi"):
+        import pandas as pd
+        import seaborn as sns
+        import matplotlib.pyplot as plt
+        from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+        
+        # Fungsi untuk menampilkan hasil pengujian dan evaluasi
+        def display_test_results(file_path):
             try:
-                # Data uji (pastikan ini sesuai dengan data yang digunakan untuk evaluasi)
-                x_test = np.load("x_test.npy")
-                y_test = np.load("y_test.npy")
-    
-                # Prediksi data uji
-                y_pred = model.predict(x_test)
-                y_pred_classes = (y_pred > 0.5).astype(int)
-    
-                # Evaluasi metrik
-                accuracy = accuracy_score(y_test, y_pred_classes)
-                cm = confusion_matrix(y_test, y_pred_classes)
-                report = classification_report(y_test, y_pred_classes, output_dict=True)
-    
-                st.write(f"Akurasi : {accuracy:.4f}")
-    
-                # Tampilkan confusion matrix
-                st.write("Confusion Matrix:")
-                fig, ax = plt.subplots(figsize=(8, 6))
+                # Membaca data hasil testing
+                results_df = pd.read_csv(file_path)
+        
+                # Tampilkan data hasil testing
+                st.subheader("Hasil Testing")
+                st.dataframe(results_df)
+        
+                # Hitung metrik evaluasi
+                y_true = results_df['True Label']
+                y_pred = results_df['Predicted Label']
+        
+                accuracy = accuracy_score(y_true, y_pred)
+                st.write(f"**Akurasi:** {accuracy:.4f}")
+        
+                st.write("**Classification Report:**")
+                report = classification_report(y_true, y_pred, output_dict=True)
+                st.dataframe(pd.DataFrame(report).transpose())
+        
+                # Confusion Matrix
+                cm = confusion_matrix(y_true, y_pred)
+                st.write("**Confusion Matrix:**")
+                fig, ax = plt.subplots()
                 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
-                ax.set_xlabel('Predicted')
-                ax.set_ylabel('True')
+                ax.set_xlabel('Predicted Label')
+                ax.set_ylabel('True Label')
+                ax.set_title('Confusion Matrix')
                 st.pyplot(fig)
-    
-                # Tampilkan classification report
-                st.write("Classification Report:")
-                st.json(report)
-    
+        
             except Exception as e:
-                st.error(f"Terjadi kesalahan: {e}")
+                st.error(f"Gagal memproses file: {e}")
+        
+        # Pilih file hasil testing
+        file_path = st.text_input("Masukkan path file hasil testing (CSV):")
+        if file_path:
+            display_test_results(file_path)
             
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("CITRA INDAH LESTARI - 200411100202 (TEKNIK INFORMATIKA)")
