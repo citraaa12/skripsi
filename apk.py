@@ -173,7 +173,7 @@ with st.container():
                 return []
         
         # Menerapkan tokenizing pada kolom 'slangword'
-        df['Tokenizing'] = df['Case Folding'].apply(tokenizer)
+        df['Tokenizing'] = df['CaseFolding'].apply(tokenizer)
         
         # Tampilkan hasil akhir setelah tokenizing
         st.write("Hasil Tokenizing :")
