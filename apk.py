@@ -369,30 +369,28 @@ with st.container():
             tokens = remove_stopwords(cleaned.split())
             sequence = tokenizer.texts_to_sequences([cleaned])
             padded_sequence = pad_sequences(sequence, maxlen=max_length, padding='post')
-        
+    
             # Predict sentiment
             prediction = model.predict(padded_sequence)[0][0]
             predicted_label = 1 if prediction > 0.5 else 0
-        
+    
             # Check if input exists in dataset
             original_label = "Tidak ditemukan dalam dataset"
             for i, row in df.iterrows():
                 if row['cleaned'] == cleaned:
                     original_label = row['label']
                     break
-        
+    
             # Display results
-            sentiment = "Positif" if predicted_label == 1 else "Negatif"
             st.subheader("Hasil Prediksi")
-            st.write(f"**Sentimen Prediksi:** {sentiment}")
-            st.write(f"**Confidence Score:** {prediction:.4f}")
-            st.write(f"**Label Asli:** {original_label}")
+            st.write(f"**Label Prediksi :** {predicted_label}")  # Changed to 0 or 1
+            st.write(f"**Label Asli :** {original_label}")
         
         # Evaluate model
         st.subheader("Evaluasi Model")
         y_pred = (model.predict(X_test) > 0.5).astype("int32")
-        st.write("Classification Report:")
+        st.write("Classification Report :")
         st.text(classification_report(y_test, y_pred))
-            
+                
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("CITRA INDAH LESTARI - 200411100202 (TEKNIK INFORMATIKA)")
