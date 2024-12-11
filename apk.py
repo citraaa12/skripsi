@@ -209,58 +209,48 @@ with st.container():
         st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'stopword_removal']])
 
     elif selected == "Word2Vec":
-        import gensim
-        from tensorflow.keras.preprocessing.text import Tokenizer
-        from tensorflow.keras.preprocessing.sequence import pad_sequences
-        import csv
         import pandas as pd
+        from gensim.models import Word2Vec
         import numpy as np
-
-        # Load the dataset
-        st.subheader("Word2Vec")
-        df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/preprocesing.csv")
-
-        # Assume 'stopword_removal' is the column with the processed text for Word2Vec
-        corpus = df['stopword_removal'].tolist()
-        DIM = 100  # Dimension of the word vectors
         
-        # Preprocess the corpus
-        corpus = [str(d) for d in corpus]  # Convert all elements in the corpus to strings
-        X = [d.split() for d in corpus]  # Tokenize text into words
+        # Load the dataset from 'hasil_preprocessing.xlsx'
+        df = pd.read_csv("preprocesing.csv")
         
-        # Train Word2Vec model
-        w2v_model = gensim.models.Word2Vec(sentences=X, vector_size=DIM, window=10, min_count=1)
+        # Assume 'Full Text Stemmed' is the column with the processed text
+        if 'stopword_removal' in df.columns and 'label' in df.columns:
+            df_word2vec = df[['stopword_removal', 'label']]
         
-        # Prepare the tokenizer
-        tokenizer = Tokenizer()
-        tokenizer.fit_on_texts(X)  # Train the tokenizer on the text
-        vocab = tokenizer.word_index  # Get the vocabulary
-        vocab_size = len(vocab) + 1
+            # Tokenize the text (Word2Vec requires tokenized input)
+            tokenized_text = df_word2vec['stopword_removal'].apply(lambda x: x.split())
         
-        # Prepare the CSV structure for Word2Vec embeddings
-        word_vectors = []
-        header = ['word'] + [f'feature_{i+1}' for i in range(DIM)]
+            # Train the Word2Vec model
+            word2vec_model = Word2Vec(sentences=tokenized_text, vector_size=100, window=5, min_count=1, workers=4)
         
-        # Collect word embeddings for each word in the vocabulary
-        for word, idx in vocab.items():
-            if word in w2v_model.wv:
-                vector = w2v_model.wv[word]
-            else:
-                # If a word is not in the Word2Vec model, assign a random vector
-                vector = np.random.normal(scale=0.6, size=(DIM,))
-            word_vectors.append([word] + vector.tolist())
+            # Create a function to calculate the sentence vector by averaging word vectors
+            def get_sentence_vector(tokens, model):
+                word_vectors = [model.wv[word] for word in tokens if word in model.wv]
+                if word_vectors:
+                    return np.mean(word_vectors, axis=0)
+                else:
+                    return np.zeros(model.vector_size)
         
-        # Convert to DataFrame for displaying in Streamlit
-        vector_df = pd.DataFrame(word_vectors, columns=header)
+            # Apply the function to calculate sentence vectors for each text
+            df_word2vec['Vector'] = tokenized_text.apply(lambda tokens: get_sentence_vector(tokens, word2vec_model))
         
-        # Display the vocabulary size and DataFrame in Streamlit
-        st.write(f"Jumlah kata dalam vocab: {vocab_size}")
-        st.write("Vektor Word2Vec (100 fitur per kata):")
-        st.dataframe(vector_df, height=600, width=900)
+            # Convert the vectors into a DataFrame for display
+            vector_df = pd.DataFrame(df_word2vec['Vector'].to_list(), columns=[f'Feature_{i+1}' for i in range(word2vec_model.vector_size)])
         
-        # Optional: Save the word vectors to a CSV file (if needed)
-        # vector_df.to_csv("word2vec.csv", index=False)
-        # st.write("File Word2Vec telah disimpan sebagai 'word2vec.csv'")
+            # Add the 'Label' column to the DataFrame
+            vector_df['label'] = df_word2vec['label']
+        
+            # Display the Word2Vec results
+            st.subheader("Word2Vec Results")
+            st.dataframe(vector_df)
+        
+            # Optionally, you can save the Word2Vec model for future use (for example, to use in predictions)
+            # word2vec_model.save("word2vec_model.model")
+        else:
+            st.error("Dataset does not have the required columns: 'stopword_removal' and 'label'")
 
     
     elif selected == "Information Gain":
