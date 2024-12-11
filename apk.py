@@ -211,8 +211,8 @@ with st.container():
         st.write("Data setelah stopword removal :")
         st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'stopword_removal']])
 
-        elif selected == "Word2Vec":
-            st.subheader("Word2Vec")
+    elif selected == "Word2Vec":
+        st.subheader("Word2Vec")
 
         # Load the dataset
         df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/preprocesing.csv")
