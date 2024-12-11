@@ -25,6 +25,7 @@ os.system('pip install nltk')
 from nltk.stem import PorterStemmer
 import nltk
 nltk.download('stopwords')
+import gensim
 
 
 st.set_page_config(
