@@ -174,7 +174,7 @@ with st.container():
                 return text.split()  # Tokenisasi sederhana dengan split
                 return []
         
-        # Menerapkan tokenizing pada kolom 'slangword'
+        # Menerapkan tokenizing pada kolom 'case folding'
         df['Tokenizing'] = df['CaseFolding'].apply(tokenizer)
         
         # Tampilkan hasil akhir setelah tokenizing
@@ -182,19 +182,30 @@ with st.container():
         st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing']])
         
         # Stopword removal
-        def remove_stopwords(text):
-            return [word for word in text if word not in stopword]
+        import pandas as pd
+        import nltk
+        from nltk.tokenize import word_tokenize
+        import numpy as np
 
-        df['stopword_removal'] = df['Tokenizing'].apply(lambda x: remove_stopwords(x))
+        # Unduh package stopwords untuk bahasa Indonesia
+        nltk.download('stopwords')
+
+        # Stopword Removal
+        stopword = nltk.corpus.stopwords.words('indonesian')
+
+        def remove_stopwords(Text):
+            return [word for word in Text if word not in stopword]
+
+        df['stopword_removal'] = df['text_tokens'].apply(lambda x: remove_stopwords(x))
         df.head()
 
         # Remove karakter
         stopword_removal = df[['stopword_removal']]
 
-        def fit_stopwords(text):
-            text = np.array(text)
-            text = ' '.join(text)
-            return text
+        def fit_stopwords(Text):
+        Text = np.array(Text)
+        Text = ' '.join(Text)
+        return Text
 
         df['stopword_removal'] = df['stopword_removal'].apply(lambda x: fit_stopwords(x))
         
