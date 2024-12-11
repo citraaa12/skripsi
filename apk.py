@@ -210,14 +210,6 @@ with st.container():
 
     elif selected == "Word2Vec":
         st.subheader("Word2Vec")
-        import subprocess
-    try:
-        import gensim
-    except ImportError:
-        import subprocess
-        import sys
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "gensim"])
-        import gensim
 
         # Load the dataset
         df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/preprocesing.csv")
