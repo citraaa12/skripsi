@@ -38,7 +38,7 @@ st.set_page_config(
 )
 
 st.write(
-    """<h1 style="font-size: 40px;">Analisis Sentimen Rumah Makan</h1>""",
+    """<h1 style="font-size: 40px;">Analisis Sentimen Pembangunan Ibukota Nusantara</h1>""",
     unsafe_allow_html=True,
 )
 
@@ -84,7 +84,7 @@ with st.container():
     if selected == "Home":
         st.write(
             """<h3 style = "text-align: center;">
-        <img src="https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.jpeg" width="500" height="300">
+        <img src="https://raw.githubusercontent.com/dinia28/skripsi/main/ikn.png" width="500" height="300">
         </h3>""",
             unsafe_allow_html=True,
         )
@@ -92,7 +92,7 @@ with st.container():
         st.subheader("""Deskripsi Aplikasi""")
         st.write(
             """
-        ANALISIS SENTIMEN RUMAH MAKAN MELALUI ULASAN GOOGLE MAPS MENGGUNAKAN METODE WEIGHT K-NEAREST NEIGHBOR DENGAN SELEKSI FITUR INFORMATION GAIN
+        ANALISIS SENTIMEN PEMBANGUNAN IBUKOTA NUSANTARA MENGGUNAKAN METODE LONG SHORT TERM-MEMORY DAN WORD2VEC
         """
         )
 
@@ -101,7 +101,7 @@ with st.container():
         st.subheader("""Deskripsi Data""")
         st.write(
             """
-        Data yang digunakan dalam aplikasi ini yaitu data dari hasil scrapping ulasan pada google maps
+        Data yang digunakan dalam aplikasi ini yaitu data dari hasil crawling komentar pada video youtube
         """
         )
         
