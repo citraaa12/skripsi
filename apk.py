@@ -209,48 +209,12 @@ with st.container():
         st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'stopword_removal']])
 
     elif selected == "Word2Vec":
-        import pandas as pd
-        from gensim.models import Word2Vec
-        import numpy as np
-        
-        # Load the dataset from 'hasil_preprocessing.xlsx'
-        df = pd.read_csv("preprocesing.csv")
-        
-        # Assume 'Full Text Stemmed' is the column with the processed text
-        if 'stopword_removal' in df.columns and 'label' in df.columns:
-            df_word2vec = df[['stopword_removal', 'label']]
-        
-            # Tokenize the text (Word2Vec requires tokenized input)
-            tokenized_text = df_word2vec['stopword_removal'].apply(lambda x: x.split())
-        
-            # Train the Word2Vec model
-            word2vec_model = Word2Vec(sentences=tokenized_text, vector_size=100, window=5, min_count=1, workers=4)
-        
-            # Create a function to calculate the sentence vector by averaging word vectors
-            def get_sentence_vector(tokens, model):
-                word_vectors = [model.wv[word] for word in tokens if word in model.wv]
-                if word_vectors:
-                    return np.mean(word_vectors, axis=0)
-                else:
-                    return np.zeros(model.vector_size)
-        
-            # Apply the function to calculate sentence vectors for each text
-            df_word2vec['Vector'] = tokenized_text.apply(lambda tokens: get_sentence_vector(tokens, word2vec_model))
-        
-            # Convert the vectors into a DataFrame for display
-            vector_df = pd.DataFrame(df_word2vec['Vector'].to_list(), columns=[f'Feature_{i+1}' for i in range(word2vec_model.vector_size)])
-        
-            # Add the 'Label' column to the DataFrame
-            vector_df['label'] = df_word2vec['label']
-        
-            # Display the Word2Vec results
-            st.subheader("Word2Vec Results")
-            st.dataframe(vector_df)
-        
-            # Optionally, you can save the Word2Vec model for future use (for example, to use in predictions)
-            # word2vec_model.save("word2vec_model.model")
-        else:
-            st.error("Dataset does not have the required columns: 'stopword_removal' and 'label'")
+        st.subheader("Hasil Word2Vec")
+        # Menggunakan file Excel dari GitHub
+        df = pd.read_excel(
+            "https://raw.githubusercontent.com/citraaa12/skripsi/main/w2v.xlsx"
+        )
+        st.dataframe(df, width=600)
     
     elif selected == "Implementasi":
         # Fungsi untuk memuat model dan menampilkan hasil rinci
