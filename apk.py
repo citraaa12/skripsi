@@ -360,8 +360,7 @@ with st.container():
         model.fit(X_train, y_train, epochs=5, batch_size=32, validation_split=0.1, verbose=1)
         
         # Streamlit App
-        st.title("Analisis Sentimen dengan LSTM")
-        input_text = st.text_area("Masukkan komentar YouTube:")
+        input_text = st.text_area("Masukkan komentar YouTube :")
         
         if st.button("Prediksi"):
             # Preprocess input text
@@ -383,13 +382,13 @@ with st.container():
     
             # Display results
             st.subheader("Hasil Prediksi")
-            st.write(f"**Sentimen Prediksi:** {predicted_label}")  # Changed to 0 or 1
+            st.write(f"**LLabel Prediksi :** {predicted_label}")  # Changed to 0 or 1
             st.write(f"**Label Asli:** {original_label}")
         
         # Evaluate model
         st.subheader("Evaluasi Model")
         y_pred = (model.predict(X_test) > 0.5).astype("int32")
-        st.write("Classification Report:")
+        st.write("Classification Report :")
         st.text(classification_report(y_test, y_pred))
             
 st.markdown("---")  # Menambahkan garis pemisah
