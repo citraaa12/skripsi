@@ -30,7 +30,8 @@ try:
     import gensim
 except ImportError:
     import subprocess
-    subprocess.run(["pip", "install", "gensim"], check=True)
+    import sys
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "gensim"])
     import gensim
 
 st.set_page_config(
