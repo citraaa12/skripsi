@@ -230,6 +230,8 @@ with st.container():
         import nltk
         from nltk.corpus import stopwords
         import re
+        from keras.models import load_model
+
         
         # Unduh stopwords jika belum ada
         nltk.download('stopwords')
