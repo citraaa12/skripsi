@@ -375,12 +375,12 @@ with st.container():
             st.subheader("Hasil Prediksi")
             if predicted_label == 1:
                 st.markdown(
-                    '<div style="background-color:#d4edda;padding:10px;border-radius:5px;text-align:center;font-size:16px;">\n                    <strong>Label Prediksi: Positif</strong>\n                    </div>',
+                    '<div style="background-color:#d4edda;padding:10px;border-radius:5px;text-align:center;font-size:16px;">\n                    <strong>Label Prediksi : Positif</strong>\n                    </div>',
                     unsafe_allow_html=True
                 )
             else:
                 st.markdown(
-                    '<div style="background-color:#f8d7da;padding:10px;border-radius:5px;text-align:center;font-size:16px;">\n                    <strong>Label Prediksi: Negatif</strong>\n                    </div>',
+                    '<div style="background-color:#f8d7da;padding:10px;border-radius:5px;text-align:center;font-size:16px;">\n                    <strong>Label Prediksi : Negatif</strong>\n                    </div>',
                     unsafe_allow_html=True
                 )
                 
