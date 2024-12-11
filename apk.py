@@ -314,10 +314,10 @@ with st.container():
         
         # Pilihan persentase yang dapat dipilih pengguna
         percentage_options = [95, 90, 85, 80, 75, 70, 65]
-        selected_percentage = st.selectbox("Pilih Persentase Model:", percentage_options)
+        selected_percentage = st.selectbox("Pilih Persentase Model :", percentage_options)
         
         # Memanggil fungsi untuk menampilkan detail model
         load_and_display_model_details(selected_percentage)
             
 st.markdown("---")  # Menambahkan garis pemisah
-st.write("Syamsyiya Tuddiniyah-200441100016 (Sistem Informasi)")
+st.write("CITRA INDAH LESTARI - 200411100202 (TEKNIK INFORMATIKA)")
