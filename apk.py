@@ -55,9 +55,8 @@ with st.container():
                 "Home",
                 "Data",
                 "Preprocessing",
-                "TF-IDF",
-                "Information Gain",
-                "Model WKNN",
+                "Word2Vec",
+                "Implementasi",
 
             ],
             icons=[
@@ -65,7 +64,6 @@ with st.container():
                 "person",
                 "gear",
                 "bar-chart",
-                "arrow-down-square",
                 "file-earmark-font",
             ],
             menu_icon="cast",
