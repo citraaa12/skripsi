@@ -19,7 +19,6 @@ numpy
 scikit-learn
 imbalanced-learn
 gensim
-nltk
 matplotlib
 seaborn
 plotly
