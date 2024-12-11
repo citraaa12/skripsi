@@ -84,7 +84,7 @@ with st.container():
     if selected == "Home":
         st.write(
             """<h3 style = "text-align: center;">
-        <img src="https://raw.githubusercontent.com/dinia28/skripsi/main/ikn.png" width="500" height="300">
+        <img src="https://raw.githubusercontent.com/citraaa12/skripsi/main/ikn.png" width="500" height="300">
         </h3>""",
             unsafe_allow_html=True,
         )
@@ -107,8 +107,8 @@ with st.container():
         
         st.subheader("Dataset")
         # Menggunakan file Excel dari GitHub
-        df = pd.read_excel(
-            "https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.xlsx"
+        df = pd.read_csv(
+            "https://raw.githubusercontent.com/citraaa12/skripsi/main/ikn.png"
         )
         st.dataframe(df, width=600)
         
