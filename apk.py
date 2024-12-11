@@ -359,8 +359,8 @@ with st.container():
         model.fit(X_train, y_train, epochs=5, batch_size=32, validation_split=0.1, verbose=1)
         
         # Streamlit App
-        st.title("Analisis Sentimen dengan LSTM")
-        input_text = st.text_area("Masukkan komentar YouTube:")
+        st.title(" ")
+        input_text = st.text_area("Masukkan komentar YouTube :")
         
         if st.button("Prediksi"):
             # Preprocess input text
