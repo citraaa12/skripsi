@@ -242,12 +242,104 @@ with st.container():
 
     elif selected == "Word2Vec":
         st.subheader("Hasil Word2Vec")
-        # Menggunakan file Excel dari GitHub
-        df = pd.read_excel(
-            "https://raw.githubusercontent.com/citraaa12/skripsi/main/w2v.xlsx"
-        )
-        st.dataframe(df, width=600)
-    
+        import streamlit as st
+        import pandas as pd
+        import re
+        import nltk
+        import gensim
+        import numpy as np
+        from gensim.models import Word2Vec
+        from nltk.tokenize import word_tokenize
+        
+        # Unduh stopwords untuk bahasa Indonesia
+        nltk.download('stopwords')
+        
+        # Fungsi untuk cleaning teks
+        def cleaning(text):
+            try:
+                text = re.sub(r'\$\w*', '', text)  # Menghapus simbol atau kata yang dimulai dengan $
+                text = re.sub(r'^rt[\s]+', '', text)  # Menghapus retweet mark
+                text = re.sub(r'((www\.[^\s]+)|(https?://[^\s]+))', '', text)  # Menghapus URL
+                text = re.sub('&quot;', " ", text)  # Menghapus tanda kutip
+                text = re.sub(r"\d+", "", text)  # Menghapus angka
+                text = re.sub(r"\b[a-zA-Z]\b", "", text)  # Menghapus huruf tunggal
+                text = re.sub(r'[^\w\s]', '', text)  # Menghapus karakter selain kata
+                text = re.sub(r'(.)\1+', r'\1\1', text)  # Mengurangi huruf berulang
+                text = re.sub(r'\s+', ' ', text).strip()  # Menghapus spasi berlebih
+                text = re.sub(r'#', '', text)  # Menghapus simbol hash
+                text = re.sub(r'[^a-zA-Z0-9\s]', '', text)  # Menghapus simbol non-alfabet
+                text = re.sub(r'\b\w{1,2}\b', '', text)  # Menghapus kata dengan panjang 1-2 karakter
+                text = re.sub(r'\s\s+', ' ', text).strip()  # Menghapus spasi ganda
+                text = re.sub(r'^RT[\s]+', '', text)  # Menghapus indikasi retweet
+                text = re.sub(r'^b[\s]+', '', text)  # Menghapus b
+                text = re.sub(r'^link[\s]+', '', text)  # Menghapus link
+                return text
+            except Exception as e:
+                st.write(f"Error cleaning text : {e}")
+                return text
+        
+        # Mengambil data dari file CSV
+        df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/dataset.csv")
+        # Menampilkan data sebelum dibersihkan
+        
+        # Mengisi nilai NaN dengan string kosong
+        df['komentar'] = df['komentar'].fillna("")
+        
+        # Menerapkan fungsi cleaning pada kolom 'komentar'
+        df['Cleaning'] = df['komentar'].apply(cleaning)
+        
+        # Menambahkan proses Case Folding (huruf kecil)
+        df['CaseFolding'] = df['Cleaning'].str.lower()
+        
+        # Tokenizing
+        def tokenizer(text):
+            if isinstance(text, str):
+                return text.split()  # Tokenisasi sederhana dengan split
+            return []
+        
+        df['Tokenizing'] = df['CaseFolding'].apply(tokenizer)
+        
+        # Stopword Removal
+        stopword = nltk.corpus.stopwords.words('indonesian')
+        
+        def remove_stopwords(text):
+            return [word for word in text if word not in stopword]
+        
+        df['stopword_removal'] = df['Tokenizing'].apply(lambda x: remove_stopwords(x))
+        
+        # Fungsi untuk mengonversi list kata menjadi string
+        def fit_stopwords(text):
+            text = np.array(text)
+            text = ' '.join(text)
+            return text
+        
+        df['stopword_removal'] = df['stopword_removal'].apply(lambda x: fit_stopwords(x))
+        
+        # Tokenisasi setelah stopword removal
+        tokenized_data = df['stopword_removal'].apply(lambda x: x.split()).tolist()
+        
+        # Melatih model Word2Vec
+        model_w2v = Word2Vec(sentences=tokenized_data, vector_size=100, window=5, min_count=1, workers=4)
+        
+        # Fungsi untuk mendapatkan vektor representasi dari sebuah kalimat
+        def get_vector(text):
+            vector = np.zeros(100)  # Sesuaikan dengan ukuran vektor (100)
+            words = text.split()
+            count = 0
+            for word in words:
+                if word in model_w2v.wv:
+                    vector += model_w2v.wv[word]  # Menambahkan vektor kata ke dalam total vektor kalimat
+                    count += 1
+            if count > 0:
+                vector /= count  # Normalisasi dengan jumlah kata yang ada dalam kalimat
+            return vector
+        
+        # Ekstraksi fitur menggunakan Word2Vec
+        df['word2vec_features'] = df['stopword_removal'].apply(lambda x: get_vector(x))
+        
+        # Menyimpan model Word2Vec untuk digunakan nanti
+        model_w2v.save('word2vec_model.model')
+   
     elif selected == "Implementasi":
         st.subheader("Hasil Klasifikasi")
 
