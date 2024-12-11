@@ -11,9 +11,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
 import subprocess
 subprocess.run(['pip', 'install', 'imbalanced-learn'])
-subprocess.run(['pip', 'install', 'gensim'])
-import gensim
-pip install gensim
 from imblearn.over_sampling import RandomOverSampler
 from math import sqrt
 import plotly.graph_objects as go
@@ -28,9 +25,13 @@ os.system('pip install nltk')
 from nltk.stem import PorterStemmer
 import nltk
 nltk.download('stopwords')
+import subprocess
 
-# Install gensim jika belum diinstal
-subprocess.run(['pip', 'install', 'gensim'])
+try:
+    import gensim
+except ImportError:
+    subprocess.run(["pip", "install", "gensim"])
+    import gensim
 
 st.set_page_config(
     page_title="Analisis Sentimen Rumah Makan",
