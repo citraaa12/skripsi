@@ -148,7 +148,7 @@ with st.container():
                 st.write(f"Error cleaning text : {e}")
                 return text
         
-        # Mengambil data dari file Excel
+        # Mengambil data dari file csv
         df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/dataset.csv")
         # Cek kolom dan isi untuk memastikan kolom 'Ulasan' ada
         st.write("Data contoh sebelum cleaning :", df['komentar'].head())
@@ -215,10 +215,10 @@ with st.container():
             st.subheader("Word2Vec")
 
         # Load the dataset
-        df = pd.read_excel("hasil_preprocessing.xlsx")
+        df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/preprocesing.csv")
 
-        # Assume 'Full_Text_Stemmed' is the column with the processed text for Word2Vec
-        corpus = df['Full_Text_Stemmed'].tolist()
+        # Assume 'stopword_removal' is the column with the processed text for Word2Vec
+        corpus = df['stopword_removal'].tolist()
 
         # Define parameters for Word2Vec
         DIM = 100  # Dimension of the word vectors
