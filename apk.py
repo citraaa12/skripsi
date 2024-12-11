@@ -193,7 +193,7 @@ with st.container():
         # Stopword Removal
         stopword = nltk.corpus.stopwords.words('indonesian')
 
-        def remove_stopwords(Text):
+        def remove_stopwords(text):
             return [word for word in text if word not in stopword]
 
         df['stopword_removal'] = df['Tokenizing'].apply(lambda x: remove_stopwords(x))
