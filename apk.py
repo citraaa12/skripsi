@@ -194,7 +194,7 @@ with st.container():
         stopword = nltk.corpus.stopwords.words('indonesian')
 
         def remove_stopwords(Text):
-            return [word for word in Text if word not in stopword]
+            return [word for word in text if word not in stopword]
 
         df['stopword_removal'] = df['text_tokens'].apply(lambda x: remove_stopwords(x))
         df.head()
@@ -202,10 +202,10 @@ with st.container():
         # Remove karakter
         stopword_removal = df[['stopword_removal']]
 
-        def fit_stopwords(Text):
-        Text = np.array(Text)
-        Text = ' '.join(Text)
-        return Text
+        def fit_stopwords(text):
+        Text = np.array(text)
+        Text = ' '.join(text)
+        return text
 
         df['stopword_removal'] = df['stopword_removal'].apply(lambda x: fit_stopwords(x))
         
