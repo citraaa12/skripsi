@@ -13,6 +13,7 @@ import subprocess
 subprocess.run(['pip', 'install', 'imbalanced-learn'])
 subprocess.run(['pip', 'install', 'gensim'])
 import gensim
+pip install gensim
 from imblearn.over_sampling import RandomOverSampler
 from math import sqrt
 import plotly.graph_objects as go
