@@ -203,9 +203,9 @@ with st.container():
         stopword_removal = df[['stopword_removal']]
 
         def fit_stopwords(text):
-        text = np.array(text)
-        text = ' '.join(text)
-        return text
+            text = np.array(text)
+            text = ' '.join(text)
+            return text
 
         df['stopword_removal'] = df['stopword_removal'].apply(lambda x: fit_stopwords(x))
         
