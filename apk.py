@@ -383,14 +383,8 @@ with st.container():
     
             # Display results
             st.subheader("Hasil Prediksi")
-            st.write(f"**Label Prediksi :** {predicted_label}")  # Changed to 0 or 1
-            st.write(f"**Label Asli :** {original_label}")
-        
-        # Evaluate model
-        st.subheader("Evaluasi Model")
-        y_pred = (model.predict(X_test) > 0.5).astype("int32")
-        st.write("Classification Report :")
-        st.text(classification_report(y_test, y_pred))
+            st.write(f"**Label Prediksi    :** {predicted_label}")  # Changed to 0 or 1
+            st.write(f"**Label Asli        :** {original_label}")
                 
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("CITRA INDAH LESTARI - 200411100202 (TEKNIK INFORMATIKA)")
