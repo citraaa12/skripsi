@@ -220,6 +220,7 @@ with st.container():
     elif selected == "Implementasi":
         st.subheader("Hasil Klasifikasi")
 
+        import streamlit as st
         import pandas as pd
         import seaborn as sns
         import matplotlib.pyplot as plt
@@ -231,17 +232,18 @@ with st.container():
         import nltk
         from nltk.corpus import stopwords
         import re
-        from keras.models import load_model
-        from keras.models import load_model
-
-
         
         # Unduh stopwords jika belum ada
         nltk.download('stopwords')
         stop_words = set(stopwords.words('indonesian'))
         
-        # Load model LSTM
-        model = load_model('lstm_model.h5')
+        # Coba memuat model LSTM
+        try:
+            model = load_model('lstm_model.h5')
+            print("Model berhasil dimuat.")
+        except Exception as e:
+            model = None
+            print("Error:", e)
         
         # Parameter preprocessing
         max_length = 20  # Panjang input
@@ -286,30 +288,32 @@ with st.container():
         
         st.title("Analisis Sentimen Komentar YouTube")
         
-        # Input komentar
-        input_text = st.text_area("Masukkan komentar YouTube:")
-        if st.button("Analisis"):
-            # Preprocessing
-            cleaned, tokens = preprocess_text(input_text)
-            st.subheader("Hasil Preprocessing")
-            st.write(f"**Original Text:** {input_text}")
-            st.write(f"**Cleaned Text:** {cleaned}")
-            st.write(f"**Tokens:** {tokens}")
+        if model:
+            # Input komentar
+            input_text = st.text_area("Masukkan komentar YouTube:")
+            if st.button("Analisis"):
+                # Preprocessing
+                cleaned, tokens = preprocess_text(input_text)
+                st.subheader("Hasil Preprocessing")
+                st.write(f"**Original Text:** {input_text}")
+                st.write(f"**Cleaned Text:** {cleaned}")
+                st.write(f"**Tokens:** {tokens}")
         
-            # Predict sentiment
-            label, score = predict_sentiment(cleaned)
-            sentiment = "Positif" if label == 1 else "Negatif"
-            st.subheader("Hasil Prediksi")
-            st.write(f"**Sentimen:** {sentiment}")
-            st.write(f"**Confidence Score:** {score:.4f}")
+                # Predict sentiment
+                label, score = predict_sentiment(cleaned)
+                sentiment = "Positif" if label == 1 else "Negatif"
+                st.subheader("Hasil Prediksi")
+                st.write(f"**Sentimen:** {sentiment}")
+                st.write(f"**Confidence Score:** {score:.4f}")
         
-            # Confusion Matrix placeholder
-            st.write("**Confusion Matrix:**")
-            st.write("Data confusion matrix akan tersedia setelah evaluasi batch.")
+                # Confusion Matrix placeholder
+                st.write("**Confusion Matrix:**")
+                st.write("Data confusion matrix akan tersedia setelah evaluasi batch.")
         
-            # TODO: Tambahkan evaluasi batch jika diperlukan
+                # TODO: Tambahkan evaluasi batch jika diperlukan
+        else:
+            st.error("Model tidak dapat dimuat. Silakan cek kembali.")
 
-            display_test_results(file_path)
             
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("CITRA INDAH LESTARI - 200411100202 (TEKNIK INFORMATIKA)")
