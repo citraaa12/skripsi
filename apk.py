@@ -112,9 +112,9 @@ with st.container():
         )
         st.dataframe(df, width=600)
         
-        st.subheader("Label")
+        st.subheader("label")
         # Menampilkan frekuensi dari masing-masing label
-        label_counts = df['Label'].value_counts()
+        label_counts = df['label'].value_counts()
         st.write(label_counts)
         
     elif selected == "Preprocessing":
