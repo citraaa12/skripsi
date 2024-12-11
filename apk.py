@@ -251,23 +251,8 @@ with st.container():
             # word2vec_model.save("word2vec_model.model")
         else:
             st.error("Dataset does not have the required columns: 'stopword_removal' and 'label'")
-
     
-    elif selected == "Information Gain":
-        import requests
-        from io import BytesIO
-        st.subheader("Information Gain")
-        st.write("Proses Information Gain")  # Debugging tambahan
-        url = "https://raw.githubusercontent.com/dinia28/skripsi/main/hasil_ig.xlsx"
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = BytesIO(response.content)
-            df = pd.read_excel(data)
-            st.dataframe(df, width=600)
-        else:
-            st.error("Gagal mengambil file. Periksa URL atau koneksi internet.")
-    
-    elif selected == "Model WKNN":
+    elif selected == "Implementasi":
         # Fungsi untuk memuat model dan menampilkan hasil rinci
         def load_and_display_model_details(percentage):
             model_filename = f"best_knn_model_{percentage}percent.pkl"
