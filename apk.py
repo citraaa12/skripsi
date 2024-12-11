@@ -26,13 +26,12 @@ from nltk.stem import PorterStemmer
 import nltk
 nltk.download('stopwords')
 import subprocess
-
 try:
     import gensim
 except ImportError:
-    subprocess.run(["pip", "install", "gensim"])
+    import subprocess
+    subprocess.run(["pip", "install", "gensim"], check=True)
     import gensim
-    pip install gensim
 
 st.set_page_config(
     page_title="Analisis Sentimen Pembangunan Ibukota Nusantara",
