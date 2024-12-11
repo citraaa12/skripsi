@@ -158,7 +158,7 @@ with st.container():
         
         # Menerapkan fungsi cleaning
         df['Cleaning'] = df['komentar'].apply(cleaning)
-        st.write("Hasil Cleansing :")
+        st.write("Hasil Cleaning :")
         st.dataframe(df[['komentar', 'Cleaning']])
         
         # Menambahkan proses case folding
