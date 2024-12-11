@@ -28,6 +28,10 @@ nltk.download('stopwords')
 import subprocess
 subprocess.run(['pip', 'install', 'gensim'])
 pip install gensim
+import subprocess
+
+# Install gensim jika belum diinstal
+subprocess.run(['pip', 'install', 'gensim'])
 
 st.set_page_config(
     page_title="Analisis Sentimen Rumah Makan",
