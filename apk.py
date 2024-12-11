@@ -127,35 +127,35 @@ with st.container():
         # Mendefinisikan fungsi cleaning
         def cleaning(text):
             try:
-                text = re.sub(r'\$\w*', '', Teks)
-                text = re.sub(r'^rt[\s]+', '', Teks)
-                text = re.sub(r'((www\.[^\s]+)|(https?://[^\s]+))', '', Teks)
+                text = re.sub(r'\$\w*', '', text)
+                text = re.sub(r'^rt[\s]+', '', text)
+                text = re.sub(r'((www\.[^\s]+)|(https?://[^\s]+))', '', text)
                 # Menghapus karakter tanda kutip ganda
-                text = re.sub('&quot;', " ", Teks)
+                text = re.sub('&quot;', " ", text)
                 # Menghapus angka-angka
-                text = re.sub(r"\d+", "", Teks)
+                text = re.sub(r"\d+", "", text)
                 # Menghapus kata-kata yang hanya terdiri dari satu huruf
-                text = re.sub(r"\b[a-zA-Z]\b", "", Teks)
+                text = re.sub(r"\b[a-zA-Z]\b", "", text)
                 # Menghapus karakter non-alphanumerik dan non-spasi
-                text = re.sub(r'[^\w\s]', '', Teks)
+                text = re.sub(r'[^\w\s]', '', text)
                 # Menggabungkan dua / lebih karakter yang sama menjadi dua kemunculan
-                text = re.sub(r'(.)\1+', r'\1\1', Teks)
+                text = re.sub(r'(.)\1+', r'\1\1', text)
                 # Mengganti dua atau lebih spasi berturut-turut dengan satu spasi
-                text = re.sub(r'\s+', ' ', Teks).strip()
+                text = re.sub(r'\s+', ' ', text).strip()
                 # Menghapus karakter hastag
-                text = re.sub(r'#', '', Teks)
+                text = re.sub(r'#', '', text)
                 # Menghapus karakter selain huruf-huruf alfanumerik
-                text = re.sub(r'[^a-zA-Z0-9\s]', '', Teks)
+                text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
                 # Menghapus kata-kata yang terdiri dari satu atau dua karakter
-                text = re.sub(r'\b\w{1,2}\b', '', Teks)
+                text = re.sub(r'\b\w{1,2}\b', '', text)
                 # Mengganti dua atau lebih spasi berturut-turut dengan satu spasi
-                text = re.sub(r'\s\s+', ' ', Teks).strip()
+                text = re.sub(r'\s\s+', ' ', text).strip()
                 # Menghapus "rt" dan spasi yang mengikutinya di awal baris teks
-                text = re.sub(r'^RT[\s]+', '', Teks)
+                text = re.sub(r'^RT[\s]+', '', text)
                 # Menghapus "b" dan spasi yang mengikutinya di awal baris teks
-                text = re.sub(r'^b[\s]+', '', Teks)
+                text = re.sub(r'^b[\s]+', '', text)
                 # Menghapus "link " dan spasi yang mengikutinya di awal baris teks
-                text = re.sub(r'^link[\s]+', '', Teks)
+                text = re.sub(r'^link[\s]+', '', text)
                 return text
             except Exception as e:
                 st.write(f"Error cleaning text: {e}")
@@ -177,7 +177,7 @@ with st.container():
         # Menambahkan proses case folding
         df['CaseFolding'] = df['Cleaning'].str.lower()
         st.write("Hasil Case Folding :")
-        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding']])
+        st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding']])
 
         # Tokenizing
         def tokenizer(text):
@@ -202,16 +202,16 @@ with st.container():
         # Remove karakter
         stopword_removal = df[['stopword_removal']]
 
-        def fit_stopwords(Text):
-        Text = np.array(Text)
-        Text = ' '.join(Text)
-            return Text
+        def fit_stopwords(text):
+        Text = np.array(text)
+        Text = ' '.join(text)
+            return text
 
         df['stopword_removal'] = df['stopword_removal'].apply(lambda x: fit_stopwords(x))
         
         # Menampilkan hasil di Streamlit
         st.write("Data setelah stopword removal :")
-        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'Tokenizing', 'Stopword_Removal']])
+        st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'Stopword_Removal']])
 
     elif selected == "TF-IDF":
         # Load the dataset from 'hasil_preprocessing.xlsx'
