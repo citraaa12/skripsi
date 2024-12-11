@@ -127,61 +127,57 @@ with st.container():
         # Mendefinisikan fungsi cleaning
         def cleaning(text):
             try:
-                text = re.sub(r'\$\w*', '', str(text))
-                text = re.sub(r'^rt[\s]+', '', str(text))
-                text = re.sub(r'((www\.[^\s]+)|(https?://[^\s]+))', ' ', str(text))
-                text = re.sub(r'&quot;', " ", str(text))
-                text = re.sub(r"\d+", " ", str(text))
-                text = re.sub(r"\b[a-zA-Z]\b", "", str(text))
-                text = re.sub(r"[^\w\s]", " ", str(text))
-                text = re.sub(r'(.)\1+', r'\1\1', str(text))
-                text = re.sub(r"\s+", " ", str(text))
-                text = re.sub(r'#', '', str(text))
-                text = re.sub(r'[^a-zA-Z0-9]', ' ', str(text))
-                text = re.sub(r'\s\s+', ' ', str(text))
-                text = re.sub(r'^RT[\s]+', '', str(text))
-                text = re.sub(r'^b[\s]+', '', str(text))
-                text = re.sub(r'^link[\s]+', '', str(text))
+                text = re.sub(r'\$\w*', '', Teks)
+                text = re.sub(r'^rt[\s]+', '', Teks)
+                text = re.sub(r'((www\.[^\s]+)|(https?://[^\s]+))', '', Teks)
+                # Menghapus karakter tanda kutip ganda
+                text = re.sub('&quot;', " ", Teks)
+                # Menghapus angka-angka
+                text = re.sub(r"\d+", "", Teks)
+                # Menghapus kata-kata yang hanya terdiri dari satu huruf
+                text = re.sub(r"\b[a-zA-Z]\b", "", Teks)
+                # Menghapus karakter non-alphanumerik dan non-spasi
+                text = re.sub(r'[^\w\s]', '', Teks)
+                # Menggabungkan dua / lebih karakter yang sama menjadi dua kemunculan
+                text = re.sub(r'(.)\1+', r'\1\1', Teks)
+                # Mengganti dua atau lebih spasi berturut-turut dengan satu spasi
+                text = re.sub(r'\s+', ' ', Teks).strip()
+                # Menghapus karakter hastag
+                text = re.sub(r'#', '', Teks)
+                # Menghapus karakter selain huruf-huruf alfanumerik
+                text = re.sub(r'[^a-zA-Z0-9\s]', '', Teks)
+                # Menghapus kata-kata yang terdiri dari satu atau dua karakter
+                text = re.sub(r'\b\w{1,2}\b', '', Teks)
+                # Mengganti dua atau lebih spasi berturut-turut dengan satu spasi
+                text = re.sub(r'\s\s+', ' ', Teks).strip()
+                # Menghapus "rt" dan spasi yang mengikutinya di awal baris teks
+                text = re.sub(r'^RT[\s]+', '', Teks)
+                # Menghapus "b" dan spasi yang mengikutinya di awal baris teks
+                text = re.sub(r'^b[\s]+', '', Teks)
+                # Menghapus "link " dan spasi yang mengikutinya di awal baris teks
+                text = re.sub(r'^link[\s]+', '', Teks)
                 return text
             except Exception as e:
                 st.write(f"Error cleaning text: {e}")
                 return text
         
         # Mengambil data dari file Excel
-        df = pd.read_excel("https://raw.githubusercontent.com/dinia28/skripsi/main/bebek.xlsx")
+        df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/dataset.csv")
         # Cek kolom dan isi untuk memastikan kolom 'Ulasan' ada
-        st.write("Data contoh sebelum cleaning:", df['Ulasan'].head())
+        st.write("Data contoh sebelum cleaning :", df['komentar'].head())
         
         # Mengisi nilai NaN dengan string kosong untuk kolom 'Ulasan'
-        df['Ulasan'] = df['Ulasan'].fillna("")
+        df['komentar'] = df['komentar'].fillna("")
         
         # Menerapkan fungsi cleaning
-        df['Cleaning'] = df['Ulasan'].apply(cleaning)
-        st.write("Hasil Cleansing:")
-        st.dataframe(df[['Ulasan', 'Cleaning']])
+        df['Cleaning'] = df['komentar'].apply(cleaning)
+        st.write("Hasil Cleansing :")
+        st.dataframe(df[['komentar', 'Cleaning']])
         
         # Menambahkan proses case folding
         df['CaseFolding'] = df['Cleaning'].str.lower()
-        st.write("Hasil Case Folding:")
+        st.write("Hasil Case Folding :")
         st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding']])
-        
-        # Membaca file slang words
-        slangword_normalisasi = pd.read_csv("combined_slang_words.csv")
-        
-        # Membuat kamus slang words untuk normalisasi
-        kata_normalisasi_dict = {row[0]: row[1] for _, row in slangword_normalisasi.iterrows()}
-        
-        # Fungsi untuk normalisasi kata slang
-        def normalisasi_kata(document):
-            return ' '.join([kata_normalisasi_dict.get(term, term) for term in document.split()])
-        
-        # Menerapkan fungsi normalisasi slang words
-        df['CaseFolding'] = df['CaseFolding'].fillna('').astype(str)
-        df['slangword'] = df['CaseFolding'].apply(normalisasi_kata)
-        
-        # Tampilkan hasil akhir setelah normalisasi slang words
-        st.write("Hasil Normalisasi Slang Words:")
-        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword']])
 
         # Tokenizing
         def tokenizer(text):
@@ -190,45 +186,32 @@ with st.container():
                 return []
         
         # Menerapkan tokenizing pada kolom 'slangword'
-        df['Tokenizing'] = df['slangword'].apply(tokenizer)
+        df['Tokenizing'] = df['Case Folding'].apply(tokenizer)
         
         # Tampilkan hasil akhir setelah tokenizing
-        st.write("Hasil Tokenizing:")
-        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing']])
+        st.write("Hasil Tokenizing :")
+        st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing']])
         
         # Stopword removal
-        sw = pd.read_csv("combined_stop_words.csv", header=None)[0].tolist()
-        
-        # Gabungkan stopword default dengan stopword tambahan
-        corpus = sw
-        
-        # Fungsi stopword removal
-        def stopword_removal(words):
-            return [word for word in words if word not in corpus]
-        
-        # Menerapkan stopword removal pada kolom 'Tokenizing'
-        df['Stopword_Removal'] = df['Tokenizing'].apply(stopword_removal)
+        def remove_stopwords(text):
+            return [word for word in Text if word not in stopword]
+
+        df['stopword_removal'] = df['Tokenizing'].apply(lambda x: remove_stopwords(x))
+        df.head()
+
+        # Remove karakter
+        stopword_removal = df[['stopword_removal']]
+
+        def fit_stopwords(Text):
+        Text = np.array(Text)
+        Text = ' '.join(Text)
+            return Text
+
+        df['stopword_removal'] = df['stopword_removal'].apply(lambda x: fit_stopwords(x))
         
         # Menampilkan hasil di Streamlit
-        st.write("Data setelah stopword removal:")
-        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal']])
-
-        # Inisialisasi Porter Stemmer
-        stemmer = PorterStemmer()
-        
-        # Fungsi stemming
-        def stemText(words):
-            return [stemmer.stem(word) for word in words]
-        
-        # Menerapkan stemming pada kolom 'Stopword_Removal'
-        df['Stemming'] = df['Stopword_Removal'].apply(stemText)
-        
-        # Menggabungkan hasil stemming menjadi satu kalimat
-        df['Full_Text_Stemmed'] = df['Stemming'].apply(lambda x: ' '.join(x))
-        
-        # Menampilkan hasil akhir di Streamlit
-        st.write("Data setelah Stemming:")
-        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'slangword', 'Tokenizing', 'Stopword_Removal', 'Stemming', 'Full_Text_Stemmed']])
+        st.write("Data setelah stopword removal :")
+        st.dataframe(df[['Ulasan', 'Cleaning', 'CaseFolding', 'Tokenizing', 'Stopword_Removal']])
 
     elif selected == "TF-IDF":
         # Load the dataset from 'hasil_preprocessing.xlsx'
