@@ -206,42 +206,11 @@ with st.container():
         # Menampilkan hasil akhir setelah stopword removal
         st.write("Data setelah stopword removal (dalam format teks):")
         st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'stopword_removal']])
-        
-        # Tokenisasi setelah stopword removal
-        tokenized_data = df['stopword_removal'].apply(lambda x: x.split()).tolist()
-        
-        # Melatih model Word2Vec
-        model_w2v = Word2Vec(sentences=tokenized_data, vector_size=100, window=5, min_count=1, workers=4)
-        
-        # Fungsi untuk mendapatkan vektor representasi dari sebuah kalimat
-        def get_vector(text):
-            vector = np.zeros(100)  # Sesuaikan dengan ukuran vektor (100)
-            words = text.split()
-            count = 0
-            for word in words:
-                if word in model_w2v.wv:
-                    vector += model_w2v.wv[word]  # Menambahkan vektor kata ke dalam total vektor kalimat
-                    count += 1
-            if count > 0:
-                vector /= count  # Normalisasi dengan jumlah kata yang ada dalam kalimat
-            return vector
-        
-        # Ekstraksi fitur menggunakan Word2Vec
-        df['word2vec_features'] = df['stopword_removal'].apply(lambda x: get_vector(x))
-        
-        # Menampilkan data akhir dengan fitur Word2Vec
-        st.write("Data dengan Fitur Word2Vec:")
-        st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'stopword_removal', 'word2vec_features']])
-        
-        # Menyimpan model Word2Vec untuk digunakan nanti
-        model_w2v.save('word2vec_model.model')
-        st.write("Model Word2Vec telah disimpan.")
-        
-        # Anda bisa menggunakan model ini untuk ekstraksi fitur lebih lanjut
 
 
     elif selected == "Word2Vec":
         st.subheader("Hasil Word2Vec")
+        
         import streamlit as st
         import pandas as pd
         import re
@@ -281,15 +250,20 @@ with st.container():
         # Mengambil data dari file CSV
         df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/dataset.csv")
         # Menampilkan data sebelum dibersihkan
+        st.write("Data contoh sebelum cleaning:", df['komentar'].head())
         
         # Mengisi nilai NaN dengan string kosong
         df['komentar'] = df['komentar'].fillna("")
         
         # Menerapkan fungsi cleaning pada kolom 'komentar'
         df['Cleaning'] = df['komentar'].apply(cleaning)
+        st.write("Hasil Cleaning:")
+        st.dataframe(df[['komentar', 'Cleaning']])
         
         # Menambahkan proses Case Folding (huruf kecil)
         df['CaseFolding'] = df['Cleaning'].str.lower()
+        st.write("Hasil Case Folding:")
+        st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding']])
         
         # Tokenizing
         def tokenizer(text):
@@ -298,6 +272,8 @@ with st.container():
             return []
         
         df['Tokenizing'] = df['CaseFolding'].apply(tokenizer)
+        st.write("Hasil Tokenizing:")
+        st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing']])
         
         # Stopword Removal
         stopword = nltk.corpus.stopwords.words('indonesian')
@@ -307,6 +283,10 @@ with st.container():
         
         df['stopword_removal'] = df['Tokenizing'].apply(lambda x: remove_stopwords(x))
         
+        # Menampilkan hasil stopword removal
+        st.write("Data setelah stopword removal:")
+        st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'stopword_removal']])
+        
         # Fungsi untuk mengonversi list kata menjadi string
         def fit_stopwords(text):
             text = np.array(text)
@@ -314,6 +294,10 @@ with st.container():
             return text
         
         df['stopword_removal'] = df['stopword_removal'].apply(lambda x: fit_stopwords(x))
+        
+        # Menampilkan hasil akhir setelah stopword removal
+        st.write("Data setelah stopword removal (dalam format teks):")
+        st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'stopword_removal']])
         
         # Tokenisasi setelah stopword removal
         tokenized_data = df['stopword_removal'].apply(lambda x: x.split()).tolist()
@@ -343,6 +327,9 @@ with st.container():
         
         # Menyimpan model Word2Vec untuk digunakan nanti
         model_w2v.save('word2vec_model.model')
+        st.write("Model Word2Vec telah disimpan.")
+        
+        # Anda bisa menggunakan model ini untuk ekstraksi fitur lebih lanjut
    
     elif selected == "Implementasi":
         st.subheader("Hasil Klasifikasi")
