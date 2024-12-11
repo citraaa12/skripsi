@@ -32,9 +32,10 @@ try:
 except ImportError:
     subprocess.run(["pip", "install", "gensim"])
     import gensim
+    pip install gensim
 
 st.set_page_config(
-    page_title="Analisis Sentimen Rumah Makan",
+    page_title="Analisis Sentimen Pembangunan Ibukota Nusantara",
     page_icon="https://raw.githubusercontent.com/dinia28/skripsi/main/rumah.jpg",
     layout="centered",
     initial_sidebar_state="expanded",
