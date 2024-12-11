@@ -25,10 +25,6 @@ os.system('pip install nltk')
 from nltk.stem import PorterStemmer
 import nltk
 nltk.download('stopwords')
-import subprocess
-subprocess.run(['pip', 'install', 'gensim'])
-pip install gensim
-import subprocess
 
 # Install gensim jika belum diinstal
 subprocess.run(['pip', 'install', 'gensim'])
@@ -219,6 +215,8 @@ with st.container():
 
     elif selected == "Word2Vec":
         st.subheader("Word2Vec")
+        !pip install gensim
+        import gensim
 
         # Load the dataset
         df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/preprocesing.csv")
