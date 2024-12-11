@@ -23,8 +23,6 @@ import seaborn as sns
 import os
 os.system('pip install nltk')
 from nltk.stem import PorterStemmer
-import nltk
-nltk.download('stopwords')
 
 st.set_page_config(
     page_title="Analisis Sentimen Pembangunan Ibukota Nusantara",
