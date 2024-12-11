@@ -117,7 +117,7 @@ with st.container():
         
     elif selected == "Preprocessing":
         # Cleansing
-        st.subheader("Preprocessing")
+        st.subheader("Hasil Preprocessing")
     
         import streamlit as st
         import pandas as pd
