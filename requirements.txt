@@ -1,5 +1,6 @@
 gensim
 scipy
+Sastrawi
 tensorflow
 streamlit>=1.19.0
 pandas>=1.3.0
