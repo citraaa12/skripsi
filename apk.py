@@ -275,7 +275,6 @@ with st.container():
         df['word2vec_per_word'] = df['stopword_removal'].apply(get_word_vectors)
         
         # Menampilkan hanya beberapa baris data
-        st.write("word2vec:")
         st.dataframe(df.head(100))
         
         # Menyimpan model
