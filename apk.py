@@ -336,9 +336,11 @@ with st.container():
         
         # Ekstraksi fitur menggunakan Word2Vec
         df['word2vec_features'] = df['stopword_removal'].apply(lambda x: get_vector(x))
+        
         # Menampilkan data akhir dengan fitur Word2Vec
         st.write("Data dengan Fitur Word2Vec:")
         st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'stopword_removal', 'word2vec_features']])
+        
         # Menyimpan model Word2Vec untuk digunakan nanti
         model_w2v.save('word2vec_model.model')
    
