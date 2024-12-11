@@ -223,44 +223,87 @@ with st.container():
         import seaborn as sns
         import matplotlib.pyplot as plt
         from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+        import numpy as np
+        from tensorflow.keras.models import load_model
+        from tensorflow.keras.preprocessing.text import Tokenizer
+        from tensorflow.keras.preprocessing.sequence import pad_sequences
+        import nltk
+        from nltk.corpus import stopwords
+        import re
         
-        # Fungsi untuk menampilkan hasil pengujian dan evaluasi
-        def display_test_results(file_path):
-            try:
-                # Membaca data hasil testing
-                df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/hasiltesting.csv")
+        # Unduh stopwords jika belum ada
+        nltk.download('stopwords')
+        stop_words = set(stopwords.words('indonesian'))
         
-                # Tampilkan data hasil testing
-                st.subheader("Hasil Testing")
-                st.dataframe(df)
+        # Load model LSTM
+        model = load_model('lstm_model.h5')
         
-                # Hitung metrik evaluasi
-                y_true = df['True Label']
-                y_pred = df['Predicted Label']
+        # Parameter preprocessing
+        max_length = 20  # Panjang input
+        vocab_size = 14545  # Disesuaikan dengan model Anda
         
-                accuracy = accuracy_score(y_true, y_pred)
-                st.write(f"**Akurasi:** {accuracy:.4f}")
+        def clean_text(text):
+            text = re.sub(r'\$\w*', '', text)
+            text = re.sub(r'^rt[\s]+', '', text)
+            text = re.sub(r'((www\.[^\s]+)|(https?://[^\s]+))', '', text)
+            text = re.sub('&quot;', " ", text)
+            text = re.sub(r"\d+", "", text)
+            text = re.sub(r"\b[a-zA-Z]\b", "", text)
+            text = re.sub(r'[^\w\s]', '', text)
+            text = re.sub(r'(.)\1+', r'\1\1', text)
+            text = re.sub(r'\s+', ' ', text).strip()
+            return text
         
-                st.write("**Classification Report:**")
-                report = classification_report(y_true, y_pred, output_dict=True)
-                st.dataframe(pd.DataFrame(report).transpose())
+        def case_folding(text):
+            return text.lower()
         
-                # Confusion Matrix
-                cm = confusion_matrix(y_true, y_pred)
-                st.write("**Confusion Matrix:**")
-                fig, ax = plt.subplots()
-                sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
-                ax.set_xlabel('Predicted Label')
-                ax.set_ylabel('True Label')
-                ax.set_title('Confusion Matrix')
-                st.pyplot(fig)
+        def tokenize(text):
+            return text.split()
         
-            except Exception as e:
-                st.error(f"Gagal memproses file : {e}")
+        def remove_stopwords(tokens):
+            return [word for word in tokens if word not in stop_words]
         
-        # Pilih file hasil testing
-        file_path = st.text_input("Masukkan path file hasil testing (CSV) :")
-        if file_path:
+        def preprocess_text(text):
+            cleaned = clean_text(text)
+            folded = case_folding(cleaned)
+            tokens = tokenize(folded)
+            no_stopwords = remove_stopwords(tokens)
+            return " ".join(no_stopwords), no_stopwords
+        
+        def predict_sentiment(text):
+            # Tokenizer
+            tokenizer = Tokenizer(num_words=vocab_size)
+            tokenizer.fit_on_texts([text])
+            sequences = tokenizer.texts_to_sequences([text])
+            padded = pad_sequences(sequences, maxlen=max_length, padding='post')
+            prediction = model.predict(padded)
+            return 1 if prediction[0][0] > 0.5 else 0, prediction[0][0]
+        
+        st.title("Analisis Sentimen Komentar YouTube")
+        
+        # Input komentar
+        input_text = st.text_area("Masukkan komentar YouTube:")
+        if st.button("Analisis"):
+            # Preprocessing
+            cleaned, tokens = preprocess_text(input_text)
+            st.subheader("Hasil Preprocessing")
+            st.write(f"**Original Text:** {input_text}")
+            st.write(f"**Cleaned Text:** {cleaned}")
+            st.write(f"**Tokens:** {tokens}")
+        
+            # Predict sentiment
+            label, score = predict_sentiment(cleaned)
+            sentiment = "Positif" if label == 1 else "Negatif"
+            st.subheader("Hasil Prediksi")
+            st.write(f"**Sentimen:** {sentiment}")
+            st.write(f"**Confidence Score:** {score:.4f}")
+        
+            # Confusion Matrix placeholder
+            st.write("**Confusion Matrix:**")
+            st.write("Data confusion matrix akan tersedia setelah evaluasi batch.")
+        
+            # TODO: Tambahkan evaluasi batch jika diperlukan
+
             display_test_results(file_path)
             
 st.markdown("---")  # Menambahkan garis pemisah
