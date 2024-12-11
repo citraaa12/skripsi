@@ -209,40 +209,59 @@ with st.container():
         st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'stopword_removal']])
 
     elif selected == "Word2Vec":
-        st.subheader("Word2Vec")
-        from gensim.models import Word2Vec
-        pip install gensim
+        import gensim
+        from tensorflow.keras.preprocessing.text import Tokenizer
+        from tensorflow.keras.preprocessing.sequence import pad_sequences
+        import csv
+        import pandas as pd
+        import numpy as np
 
         # Load the dataset
+        st.subheader("Word2Vec")
         df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/preprocesing.csv")
 
         # Assume 'stopword_removal' is the column with the processed text for Word2Vec
         corpus = df['stopword_removal'].tolist()
-
-        # Define parameters for Word2Vec
         DIM = 100  # Dimension of the word vectors
+        
+        # Preprocess the corpus
         corpus = [str(d) for d in corpus]  # Convert all elements in the corpus to strings
-        tokenized_corpus = [d.split() for d in corpus]  # Tokenize text into words
-
+        X = [d.split() for d in corpus]  # Tokenize text into words
+        
         # Train Word2Vec model
-        w2v_model = gensim.models.Word2Vec(sentences=tokenized_corpus, vector_size=DIM, window=10, min_count=1)
-
-        # Extract vocabulary and vectors
-        vocab = list(w2v_model.wv.index_to_key)
-        vectors = [w2v_model.wv[word] for word in vocab]
-
-        # Create a DataFrame to display words and their vectors
-        vector_df = pd.DataFrame(vectors, index=vocab)
-
-        # Display the vocabulary size
-        st.write(f"Jumlah kata dalam vocab: {len(vocab)}")
-
-        # Display the word vectors
+        w2v_model = gensim.models.Word2Vec(sentences=X, vector_size=DIM, window=10, min_count=1)
+        
+        # Prepare the tokenizer
+        tokenizer = Tokenizer()
+        tokenizer.fit_on_texts(X)  # Train the tokenizer on the text
+        vocab = tokenizer.word_index  # Get the vocabulary
+        vocab_size = len(vocab) + 1
+        
+        # Prepare the CSV structure for Word2Vec embeddings
+        word_vectors = []
+        header = ['word'] + [f'feature_{i+1}' for i in range(DIM)]
+        
+        # Collect word embeddings for each word in the vocabulary
+        for word, idx in vocab.items():
+            if word in w2v_model.wv:
+                vector = w2v_model.wv[word]
+            else:
+                # If a word is not in the Word2Vec model, assign a random vector
+                vector = np.random.normal(scale=0.6, size=(DIM,))
+            word_vectors.append([word] + vector.tolist())
+        
+        # Convert to DataFrame for displaying in Streamlit
+        vector_df = pd.DataFrame(word_vectors, columns=header)
+        
+        # Display the vocabulary size and DataFrame in Streamlit
+        st.write(f"Jumlah kata dalam vocab: {vocab_size}")
+        st.write("Vektor Word2Vec (100 fitur per kata):")
         st.dataframe(vector_df, height=600, width=900)
+        
+        # Optional: Save the word vectors to a CSV file (if needed)
+        # vector_df.to_csv("word2vec.csv", index=False)
+        # st.write("File Word2Vec telah disimpan sebagai 'word2vec.csv'")
 
-        # Optional: Save the Word2Vec model for future use
-        # w2v_model.save("word2vec_model.bin")
-        # st.write("Model Word2Vec berhasil disimpan sebagai 'word2vec_model.bin'.")
     
     elif selected == "Information Gain":
         import requests
