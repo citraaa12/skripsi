@@ -198,7 +198,7 @@ with st.container():
         
         # Menampilkan hasil di Streamlit
         st.write("Data setelah stopword removal :")
-        st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'Stopword_Removal']])
+        st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'stopword_removal']])
 
     elif selected == "TF-IDF":
         # Load the dataset from 'hasil_preprocessing.xlsx'
