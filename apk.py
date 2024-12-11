@@ -285,13 +285,15 @@ with st.container():
     elif selected == "Implementasi":
         st.subheader("Hasil Klasifikasi")
 
+        import streamlit as st
+        import pandas as pd
         import seaborn as sns
         import matplotlib.pyplot as plt
         from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
         import numpy as np
-        from gensim.models import Word2Vec
-        from sklearn.model_selection import train_test_split
-        from sklearn.linear_model import LogisticRegression
+        from tensorflow.keras.models import load_model
+        from tensorflow.keras.preprocessing.text import Tokenizer
+        from tensorflow.keras.preprocessing.sequence import pad_sequences
         import nltk
         from nltk.corpus import stopwords
         import re
@@ -300,11 +302,9 @@ with st.container():
         nltk.download('stopwords')
         stop_words = set(stopwords.words('indonesian'))
         
-        # Load model Word2Vec
-        model_w2v = Word2Vec.load('word2vec_model.model')
-        
-        # Fungsi preprocessing
+        # Parameter preprocessing
         max_length = 20  # Panjang input
+        vocab_size = 14545  # Disesuaikan dengan model Anda
         
         def clean_text(text):
             text = re.sub(r'\$\w*', '', text)
@@ -332,73 +332,45 @@ with st.container():
             folded = case_folding(cleaned)
             tokens = tokenize(folded)
             no_stopwords = remove_stopwords(tokens)
-            return no_stopwords
+            return " ".join(no_stopwords), no_stopwords
         
-        def get_vector(tokens):
-            vectors = [model_w2v.wv[word] for word in tokens if word in model_w2v.wv]
-            if len(vectors) > 0:
-                return np.mean(vectors, axis=0)
-            else:
-                return np.zeros(model_w2v.vector_size)
-        
-        # Load dataset
-        df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/dataset.csv")
-        df['komentar'] = df['komentar'].fillna("")
-        df['label'] = df['label'].map({'positif': 1, 'negatif': 0})  # Ubah label menjadi numerik
-        
-        # Preprocess data
-        df['tokens'] = df['komentar'].apply(preprocess_text)
-        df['vector'] = df['tokens'].apply(get_vector)
-        
-        # Pisahkan data latih dan uji
-        X = np.vstack(df['vector'].values)
-        y = df['label']
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
-        # Train model
-        classifier = LogisticRegression()
-        classifier.fit(X_train, y_train)
-        
-        # Predict function
         def predict_sentiment(text):
-            tokens = preprocess_text(text)
-            vector = get_vector(tokens).reshape(1, -1)
-            prediction = classifier.predict(vector)
-            return int(prediction[0])
+            # Tokenizer
+            tokenizer = Tokenizer(num_words=vocab_size)
+            tokenizer.fit_on_texts([text])
+            sequences = tokenizer.texts_to_sequences([text])
+            padded = pad_sequences(sequences, maxlen=max_length, padding='post')
+            prediction = model.predict(padded)
+            return 1 if prediction[0][0] > 0.5 else 0, prediction[0][0]
         
-        # Streamlit UI
         st.title("Analisis Sentimen Komentar YouTube")
         
-        input_text = st.text_area("Masukkan komentar YouTube:")
-        if st.button("Analisis"):
-            # Preprocessing
-            tokens = preprocess_text(input_text)
-            vector = get_vector(tokens)
+        if model:
+            # Input komentar
+            input_text = st.text_area("Masukkan komentar YouTube:")
+            if st.button("Analisis"):
+                # Preprocessing
+                cleaned, tokens = preprocess_text(input_text)
+                st.subheader("Hasil Preprocessing")
+                st.write(f"**Original Text:** {input_text}")
+                st.write(f"**Cleaned Text:** {cleaned}")
+                st.write(f"**Tokens:** {tokens}")
         
-            # Predict sentiment
-            prediction = predict_sentiment(input_text)
-            sentiment = "Positif" if prediction == 1 else "Negatif"
+                # Predict sentiment
+                label, score = predict_sentiment(cleaned)
+                sentiment = "Positif" if label == 1 else "Negatif"
+                st.subheader("Hasil Prediksi")
+                st.write(f"**Sentimen:** {sentiment}")
+                st.write(f"**Confidence Score:** {score:.4f}")
         
-            # Tampilkan hasil
-            st.subheader("Hasil Prediksi")
-            st.write(f"**Komentar:** {input_text}")
-            st.write(f"**Label Prediksi:** {sentiment}")
+                # Confusion Matrix placeholder
+                st.write("**Confusion Matrix:**")
+                st.write("Data confusion matrix akan tersedia setelah evaluasi batch.")
         
-            # Menampilkan label asli (jika tersedia di data uji)
-            if input_text in df['komentar'].values:
-                true_label = df[df['komentar'] == input_text]['label'].values[0]
-                true_sentiment = "Positif" if true_label == 1 else "Negatif"
-                st.write(f"**Label Asli:** {true_sentiment}")
-            else:
-                st.write("**Label Asli:** Tidak tersedia")
-        
-        # Evaluasi Model
-        st.subheader("Evaluasi Model")
-        y_pred = classifier.predict(X_test)
-        st.write("**Akurasi:**", accuracy_score(y_test, y_pred))
-        st.write("**Confusion Matrix:**")
-        conf_matrix = confusion_matrix(y_test, y_pred)
-        st.write(conf_matrix)
+                # TODO: Tambahkan evaluasi batch jika diperlukan
+        else:
+            st.error("Model tidak dapat dimuat. Silakan cek kembali.")
+
             
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("CITRA INDAH LESTARI - 200411100202 (TEKNIK INFORMATIKA)")
