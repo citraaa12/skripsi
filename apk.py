@@ -359,7 +359,7 @@ with st.container():
         model.fit(X_train, y_train, epochs=5, batch_size=32, validation_split=0.1, verbose=1)
         
         # Streamlit App
-        input_text = st.text_area("Masukkan komentar YouTube :")
+        input_text = st.text_area("Masukkan data komentar YouTube :")
         
         if st.button("Prediksi"):
             # Preprocess input text
