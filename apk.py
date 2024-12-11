@@ -11,6 +11,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
 import subprocess
 subprocess.run(['pip', 'install', 'imbalanced-learn'])
+subprocess.run(['pip', 'install', 'gensim'])
+import gensim
 from imblearn.over_sampling import RandomOverSampler
 from math import sqrt
 import plotly.graph_objects as go
@@ -215,8 +217,6 @@ with st.container():
 
     elif selected == "Word2Vec":
         st.subheader("Word2Vec")
-        !pip install gensim
-        import gensim
 
         # Load the dataset
         df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/preprocesing.csv")
