@@ -237,14 +237,6 @@ with st.container():
         nltk.download('stopwords')
         stop_words = set(stopwords.words('indonesian'))
         
-        # Coba memuat model LSTM
-        try:
-            model = load_model('lstm_model.h5')
-            print("Model berhasil dimuat.")
-        except Exception as e:
-            model = None
-            print("Error:", e)
-        
         # Parameter preprocessing
         max_length = 20  # Panjang input
         vocab_size = 14545  # Disesuaikan dengan model Anda
