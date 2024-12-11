@@ -211,28 +211,39 @@ with st.container():
         st.write("Data setelah stopword removal :")
         st.dataframe(df[['komentar', 'Cleaning', 'CaseFolding', 'Tokenizing', 'stopword_removal']])
 
-    elif selected == "TF-IDF":
-        # Load the dataset from 'hasil_preprocessing.xlsx'
+        elif selected == "Word2Vec":
+            st.subheader("Word2Vec")
+
+        # Load the dataset
         df = pd.read_excel("hasil_preprocessing.xlsx")
-        # Assume 'Full_Text_Stemmed' is the column with the processed text for TF-IDF
-        # Create a new DataFrame for TF-IDF
-        df_tfidf = df[['Full_Text_Stemmed', 'Label']]  
-        # Initialize the TfidfVectorizer
-        vectorizer = TfidfVectorizer()
-        # Transform the 'Full_Text_Stemmed' column into a TF-IDF matrix
-        tfidf_matrix = vectorizer.fit_transform(df_tfidf['Full_Text_Stemmed'].values.astype('U')) 
-        # Get feature names (the words corresponding to the TF-IDF values)
-        feature_names = vectorizer.get_feature_names_out()
-        # Convert the TF-IDF matrix into a DataFrame
-        tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names) 
-        # Add the 'Label' column to the DataFrame
-        tfidf_df['Label'] = df_tfidf['Label']
-        # Display the TF-IDF result
-        st.subheader("TF-IDF Results")
-        st.dataframe(tfidf_df)
-        # Optionally, you can save the vectorizer for future use (for example, to use in predictions)
-        # import joblib
-        # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
+
+        # Assume 'Full_Text_Stemmed' is the column with the processed text for Word2Vec
+        corpus = df['Full_Text_Stemmed'].tolist()
+
+        # Define parameters for Word2Vec
+        DIM = 100  # Dimension of the word vectors
+        corpus = [str(d) for d in corpus]  # Convert all elements in the corpus to strings
+        tokenized_corpus = [d.split() for d in corpus]  # Tokenize text into words
+
+        # Train Word2Vec model
+        w2v_model = gensim.models.Word2Vec(sentences=tokenized_corpus, vector_size=DIM, window=10, min_count=1)
+
+        # Extract vocabulary and vectors
+        vocab = list(w2v_model.wv.index_to_key)
+        vectors = [w2v_model.wv[word] for word in vocab]
+
+        # Create a DataFrame to display words and their vectors
+        vector_df = pd.DataFrame(vectors, index=vocab)
+
+        # Display the vocabulary size
+        st.write(f"Jumlah kata dalam vocab: {len(vocab)}")
+
+        # Display the word vectors
+        st.dataframe(vector_df, height=600, width=900)
+
+        # Optional: Save the Word2Vec model for future use
+        # w2v_model.save("word2vec_model.bin")
+        # st.write("Model Word2Vec berhasil disimpan sebagai 'word2vec_model.bin'.")
     
     elif selected == "Information Gain":
         import requests
