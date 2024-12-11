@@ -217,56 +217,88 @@ with st.container():
         st.dataframe(df, width=600)
     
     elif selected == "Implementasi":
-        # Fungsi untuk memuat model dan menampilkan hasil rinci
-        def load_and_display_model_details(percentage):
-            model_filename = f"best_knn_model_{percentage}percent.pkl"
-            results_filename = "training_results_with_rankings.xlsx"
-            
-            if not os.path.exists(model_filename):
-                st.warning(f"Model untuk persentase {percentage}% tidak ditemukan.")
-                return
-        
-            # Muat model
-            best_model = joblib.load(model_filename)
-            st.write(f"Model untuk {percentage}% dimuat.")
-        
-            # Muat hasil pelatihan dari file Excel
-            if os.path.exists(results_filename):
-                results = pd.read_excel(results_filename)
-        
-                # Filter hasil berdasarkan persentase fitur
-                specific_results = results[results['Percentage'] == percentage]
-                if specific_results.empty:
-                    st.warning("Data hasil pelatihan tidak ditemukan untuk persentase ini.")
-                    return
-        
-                # Menampilkan rincian hasil untuk setiap kombinasi parameter
-                st.subheader("Detail Hasil untuk Kombinasi Parameter:")
-                for index, row in specific_results.iterrows():
-                    params = row['Best Parameters']
-                    accuracy = row['Accuracy']
-                    elapsed_time = row['Elapsed Time (s)']
-                    st.write(f"Params: {params} | Accuracy: {accuracy:.4f} | Time: {elapsed_time:.2f} seconds")
-                
-                
-                # Tampilkan informasi terbaik
-                best_accuracy = specific_results['Accuracy'].max()
-                best_params = specific_results.loc[specific_results['Accuracy'].idxmax(), 'Best Parameters']
-                best_elapsed_time = specific_results.loc[specific_results['Accuracy'].idxmax(), 'Elapsed Time (s)']
-                
-                st.write(f"Model disimpan sebagai: {model_filename}")
-                st.write(f"Best Params for {percentage}% features: {best_params}")
-                st.write(f"Best Accuracy on Test Data: {best_accuracy:.4f}")
-                st.write(f"Total Elapsed Time for Best Model: {best_elapsed_time:.2f} seconds")
+        st.subheader("Implementasi Model")
+
+        # Fungsi untuk memuat model yang telah dilatih
+        @st.cache_resource
+        def load_model():
+            # Load model terlatih
+            model_path = "best_lstm_model.h5"  # Sesuaikan dengan path model Anda
+            model = keras.models.load_model(model_path)
+            return model
+    
+        # Memuat model
+        model = load_model()
+        st.write("Model berhasil dimuat.")
+    
+        # Memasukkan komentar untuk prediksi
+        komentar_input = st.text_area("Masukkan komentar YouTube untuk diprediksi :")
+    
+        if st.button("Prediksi"):
+            if komentar_input.strip():
+                # Preprocessing komentar
+                def preprocess_text(text):
+                    text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
+                    text = text.lower()
+                    return text
+    
+                komentar_preprocessed = preprocess_text(komentar_input)
+                st.write("Komentar setelah preprocessing :", komentar_preprocessed)
+    
+                # Tokenisasi dan padding
+                tokenizer = joblib.load("tokenizer.pkl")  # Pastikan tokenizer disimpan saat melatih model
+                sequences = tokenizer.texts_to_sequences([komentar_preprocessed])
+                padded_sequences = keras.preprocessing.sequence.pad_sequences(sequences, maxlen=20)
+    
+                # Prediksi
+                prediction = model.predict(padded_sequences)
+                label_prediksi = "Positif" if prediction[0][0] > 0.5 else "Negatif"
+    
+                st.write(f"Hasil Prediksi: {label_prediksi}")
+    
+                # Menampilkan label sebenarnya jika tersedia
+                true_label = st.selectbox("Pilih label sebenarnya (opsional) :", ["", "Positif", "Negatif"])
+                if true_label:
+                    st.write(f"Label Sebenarnya: {true_label}")
+    
             else:
-                st.warning("File hasil pelatihan tidak ditemukan.")
-        
-        # Pilihan persentase yang dapat dipilih pengguna
-        percentage_options = [95, 90, 85, 80, 75, 70, 65]
-        selected_percentage = st.selectbox("Pilih Persentase Model :", percentage_options)
-        
-        # Memanggil fungsi untuk menampilkan detail model
-        load_and_display_model_details(selected_percentage)
+                st.warning("Harap masukkan komentar untuk diprediksi.")
+    
+        # Evaluasi Model
+        st.subheader("Evaluasi Model")
+    
+        # Memuat data uji dan hasil prediksi
+        if st.button("Tampilkan Evaluasi"):
+            try:
+                # Data uji (pastikan ini sesuai dengan data yang digunakan untuk evaluasi)
+                x_test = np.load("x_test.npy")
+                y_test = np.load("y_test.npy")
+    
+                # Prediksi data uji
+                y_pred = model.predict(x_test)
+                y_pred_classes = (y_pred > 0.5).astype(int)
+    
+                # Evaluasi metrik
+                accuracy = accuracy_score(y_test, y_pred_classes)
+                cm = confusion_matrix(y_test, y_pred_classes)
+                report = classification_report(y_test, y_pred_classes, output_dict=True)
+    
+                st.write(f"Akurasi : {accuracy:.4f}")
+    
+                # Tampilkan confusion matrix
+                st.write("Confusion Matrix:")
+                fig, ax = plt.subplots(figsize=(8, 6))
+                sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
+                ax.set_xlabel('Predicted')
+                ax.set_ylabel('True')
+                st.pyplot(fig)
+    
+                # Tampilkan classification report
+                st.write("Classification Report:")
+                st.json(report)
+    
+            except Exception as e:
+                st.error(f"Terjadi kesalahan: {e}")
             
 st.markdown("---")  # Menambahkan garis pemisah
 st.write("CITRA INDAH LESTARI - 200411100202 (TEKNIK INFORMATIKA)")
