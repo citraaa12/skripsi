@@ -108,7 +108,7 @@ with st.container():
         st.subheader("Dataset")
         # Menggunakan file Excel dari GitHub
         df = pd.read_csv(
-            "https://raw.githubusercontent.com/citraaa12/skripsi/main/ikn.png"
+            "https://raw.githubusercontent.com/citraaa12/skripsi/main/dataset.csv"
         )
         st.dataframe(df, width=600)
         
