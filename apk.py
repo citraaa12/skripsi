@@ -196,7 +196,7 @@ with st.container():
         def remove_stopwords(Text):
             return [word for word in text if word not in stopword]
 
-        df['stopword_removal'] = df['text_tokens'].apply(lambda x: remove_stopwords(x))
+        df['stopword_removal'] = df['Tokenizing'].apply(lambda x: remove_stopwords(x))
         df.head()
 
         # Remove karakter
