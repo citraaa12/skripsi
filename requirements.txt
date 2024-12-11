@@ -1,0 +1,14 @@
+streamlit
+pandas
+imbalanced-learn
+scikit-learn
+scipy
+streamlit-option-menu
+matplotlib
+numpy
+plotly
+openpyxl
+nltk
+spacy
+joblib==1.2.0
+seaborn
