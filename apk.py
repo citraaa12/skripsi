@@ -211,6 +211,7 @@ with st.container():
     elif selected == "Word2Vec":
         st.subheader("Word2Vec")
         from gensim.models import Word2Vec
+        pip install gensim
 
         # Load the dataset
         df = pd.read_csv("https://raw.githubusercontent.com/citraaa12/skripsi/main/preprocesing.csv")
