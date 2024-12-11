@@ -25,8 +25,9 @@ os.system('pip install nltk')
 from nltk.stem import PorterStemmer
 import nltk
 nltk.download('stopwords')
-import gensim
-
+import subprocess
+subprocess.run(['pip', 'install', 'gensim'])
+pip install gensim
 
 st.set_page_config(
     page_title="Analisis Sentimen Rumah Makan",
