@@ -23,6 +23,8 @@ import seaborn as sns
 import os
 os.system('pip install nltk')
 from nltk.stem import PorterStemmer
+from keras.models import load_model
+
 
 st.set_page_config(
     page_title="Analisis Sentimen Pembangunan Ibukota Nusantara",
@@ -231,6 +233,8 @@ with st.container():
         from nltk.corpus import stopwords
         import re
         from keras.models import load_model
+        from keras.models import load_model
+
 
         
         # Unduh stopwords jika belum ada
