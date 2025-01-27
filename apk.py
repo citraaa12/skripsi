@@ -90,7 +90,8 @@ with st.container():
         st.subheader("""Deskripsi Aplikasi""")
         st.write(
             """
-        ANALISIS SENTIMEN PEMBANGUNAN IBUKOTA NUSANTARA MENGGUNAKAN METODE LONG SHORT TERM-MEMORY DAN WORD2VEC
+        Pembangunan Ibu Kota Negara (IKN) ini telah menjadi salah satu topik yang banyak dibicarakan di Indonesia melalui media sosial. Sentimen yang terkandung dalam komentar atau opini publik dapat mempengaruhi pandangan masyarakat terhadap kebijakan pemerintah, sehingga penting untuk bisa membedakan opini positif dan negatif dengan melakukan analisis sentimen otomatis. 
+        Untuk mengatasi permasalahan tersebut, penelitian ini mengusulkan penggunaan algoritma Long Short Term Memory (LSTM) dengan kombinasi Word2Vec untuk mengklasifikasikan sentimen dari komentar YouTube mengenai pembangunan IKN dengan lebih akurat dan efisien.
         """
         )
 
